@@ -1,0 +1,82 @@
+#include "Keyboard.h"
+
+#define DEBOUNCE 100  // delay for ensuring that the button presses do not overlap
+
+
+// Variables that won't change
+
+const int sensorPin1 = A1; //A1
+const int sensorPin2 = A6; //A6
+
+const int buttonPin3 = 10; //A3
+const int buttonPin4 = 12; //A0
+
+const int keyboardKey1 = KEY_LEFT_ARROW;
+const int keyboardKey2 = KEY_RIGHT_ARROW;
+const int keyboardKey3 = KEY_UP_ARROW;
+const int keyboardKey4 = KEY_DOWN_ARROW;
+
+//threshold 
+
+const int threshold = 900;
+
+// Variables that will change
+
+int sensorValue1 = 1;
+int sensorValue2 = 1;
+
+int buttonValue3 = 1;
+int buttonValue4 = 1;
+
+
+void setup() {
+
+  // initialize the buttons' inputs:
+  pinMode(buttonPin3, INPUT_PULLUP);
+  pinMode(buttonPin4, INPUT_PULLUP);
+
+  // initialize serial
+  Serial.begin(9600);
+
+
+  Keyboard.begin();
+}
+
+void loop() {
+
+  // read all senor and button pins
+  sensorValue1 = analogRead(sensorPin1);
+  sensorValue2 = analogRead(sensorPin2);
+
+  buttonValue3 = digitalRead(buttonPin3);
+  buttonValue4 = digitalRead(buttonPin4);
+
+
+  // use the sensor values to control  keyboard
+  if (sensorValue1 > threshold) {
+    Keyboard.write(keyboardKey1);
+    Serial.println("Sensor 1 pressed");
+  }
+  if (sensorValue2 > threshold) {
+    Keyboard.write(keyboardKey2);
+    Serial.println("Sensor 2 pressed");
+  }
+  
+
+  // use the button values to control keyboard
+  if (buttonValue3 == LOW) {
+    Keyboard.press(keyboardKey3);
+    Serial.println("Button 3 pressed");
+    delay(100);
+  }
+
+  if (buttonValue4 == LOW) {
+    Keyboard.press(keyboardKey4);
+    Serial.println("Button 5 pressed");
+    delay(100);
+  } else {
+    Keyboard.releaseAll();
+  }
+
+  delay(DEBOUNCE);  // delay in between reads for stability
+}
